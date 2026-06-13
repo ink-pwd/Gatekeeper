@@ -70,7 +70,7 @@ func main() {
 	*/
 	err = godotenv.Load()
 	if err != nil {
-		log.Fatal("environment startup error: ", err.Error())
+		log.Fatal("environment startup error: %s", err.Error())
 		return
 	}
 	listenaddr = os.Getenv("LISTENADDR")
@@ -92,21 +92,21 @@ func main() {
 	*/
 	timeDurRedis, err = strconv.Atoi(timeEnv)
 	if err != nil {
-		log.Fatal("specify an integer time duration redis in .env \n", err.Error())
+		log.Fatal("specify an integer time duration redis in .env: %s", err.Error())
 	}
 
 	timeEnv = os.Getenv("TIMEDURATIONDELETE")
 
 	timeDurDelete, err = strconv.Atoi(timeEnv)
 	if err != nil {
-		log.Fatal("specify an integer time duration delete in .env \n", err.Error())
+		log.Fatal("specify an integer time duration delete in .env: %s", err.Error())
 	}
 
 	timeEnv = os.Getenv("TIMEDURATIONJWT")
 
 	timeDurJWT, err = strconv.Atoi(timeEnv)
 	if err != nil {
-		log.Fatal("specify an integer time duration jwt in .env \n", err.Error())
+		log.Fatal("specify an integer time duration jwt in .env: %s", err.Error())
 	}
 
 	/*
@@ -119,7 +119,7 @@ func main() {
 	*/
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal("error db connect: ", err.Error())
+		log.Fatal("error db connect: %s", err.Error())
 		return
 	}
 	log.Info("success connect to db")
@@ -170,8 +170,8 @@ func main() {
 	*/
 	err = http.ListenAndServe(listenaddr+port, mux)
 	if err != nil {
-		log.Fatal("the server did not start: ", err.Error())
+		log.Fatal("the server did not start: %s", err.Error())
 		return
 	}
-	log.Info("server has been started at ", listenaddr+port)
+	log.Info("server has been started at %s", listenaddr+port)
 }
