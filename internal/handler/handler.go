@@ -57,6 +57,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		используем Redis для хранения почты по ключу верификации
 		для изменения статуса пользователя на верифицированного
 	*/
+	
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 
 	/*
 		Получаем body запроса
@@ -66,7 +71,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	//закрываем чтение тела запроса
 	r.Body.Close()
 	if err != nil {
-		h.log.Error("json decode error: ", err.Error())
+		h.log.Error("json decode error: %s", err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -84,7 +89,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	*/
 	user.Password, err = security.CryptoHash(user.Password)
 	if err != nil {
-		h.log.Error("crypho hash err: ", err.Error())
+		h.log.Error("crypho hash err: %s", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -141,7 +146,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	*/
 
 	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -152,7 +157,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 
 	if err != nil {
-		h.log.Error("json decode error: ", err.Error())
+		h.log.Error("json decode error: %s", err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -172,11 +177,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	*/
 	jwtToken, err = security.CreateToken(user.Email, h.secret, h.timeDurJWT)
 	if err != nil {
-		h.log.Error("token creation error: ", err.Error())
+		h.log.Error("token creation error: %s", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	h.log.Info("success login user: ", user.Email)
+	h.log.Info("success login user: %s", user.Email)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"token": jwtToken})
@@ -190,7 +195,7 @@ func (h *AuthHandler) Validate(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -238,7 +243,7 @@ func (h *AuthHandler) Verify(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -271,7 +276,7 @@ func (h *AuthHandler) Verify(w http.ResponseWriter, r *http.Request) {
 	err = h.clientRedis.Del(token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		h.log.Error("redis del: ", err.Error())
+		h.log.Error("redis del: %s", err.Error())
 		return
 	}
 
