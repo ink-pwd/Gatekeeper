@@ -1,4 +1,4 @@
-# Gatekeeper
+# GateKeeper
 
 Gatekeeper is a production-oriented authentication microservice written in Go.
 
